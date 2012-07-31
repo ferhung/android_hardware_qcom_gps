@@ -74,7 +74,7 @@ struct rpc_loc_event_cb_f_type_rets {
 
 
 /*
- * XDR definition of the LOC_API callback program ( vers. 0x00010001 )
+ * XDR definition of the LOC_API callback program ( vers. 0x00040001 )
  */
 
 program LOC_APICBPROG {
@@ -84,7 +84,7 @@ program LOC_APICBPROG {
       rpc_loc_event_cb_f_type( rpc_loc_event_cb_f_type_args ) = 1;
 
 
-  } = 0x00010001;
+  } = 0x00040001;
 } = 0x3100008c;
 
-const LOC_APICBVERS = 0x00010001;
+const LOC_APICBVERS = 0x00040001;

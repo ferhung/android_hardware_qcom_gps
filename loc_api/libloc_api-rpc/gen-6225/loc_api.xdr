@@ -1,11 +1,10 @@
 /* LOC_API TOOL VERSION: 3.28 */
 /*=============================================================================
-                          L O C _ A P I _ C B . X D R
+                             L O C _ A P I . X D R
 
 GENERAL DESCRIPTION
   This is an AUTO GENERATED file that provides an xdr compatible definition of
-  an api that represents the grouping of the different callback functions the
-  loc_api API supports.
+  the loc_api API.
 
   ---------------------------------------------------------------------------
 Copyright (c) 2009, QUALCOMM USA, INC.
@@ -47,44 +46,119 @@ $Header$
 
 
 
+typedef rpc_uint32 rpc_loc_api_api_versions_return_type<>;
+
+/*
+ * Declare an rpc_uint32 type for each callback type in the API
+ */
+typedef rpc_uint32 rpc_loc_event_cb_f_type;
+
+
 
 /*
  * These are struct declarations for the function arguments
  */
 
-struct rpc_loc_event_cb_f_type_args {
-  rpc_uint32 cb_id;
-  rpc_loc_client_handle_type loc_handle;
-  rpc_loc_event_mask_type loc_event;
-  rpc_loc_event_payload_u_type *loc_event_payload;
+struct rpc_loc_open_args {
+  rpc_loc_event_mask_type event_reg_mask;
+  rpc_loc_event_cb_f_type event_callback;
+};
+
+struct rpc_loc_close_args {
+  rpc_loc_client_handle_type handle;
+};
+
+struct rpc_loc_start_fix_args {
+  rpc_loc_client_handle_type handle;
+};
+
+struct rpc_loc_stop_fix_args {
+  rpc_loc_client_handle_type handle;
+};
+
+struct rpc_loc_ioctl_args {
+  rpc_loc_client_handle_type handle;
+  rpc_loc_ioctl_e_type ioctl_type;
+  rpc_loc_ioctl_data_u_type *ioctl_data;
 };
 
 
 
-
-
-/*
- * These are struct declaratios for the function results
- */
-
-struct rpc_loc_event_cb_f_type_rets {
-  rpc_int32 loc_event_cb_f_type_result;
+struct rpc_loc_api_api_version_s_args {
+  rpc_boolean len_not_null;
 };
 
-
-
 /*
- * XDR definition of the LOC_API callback program ( vers. 0x00010001 )
+ * These are struct declarations for the function results
  */
 
-program LOC_APICBPROG {
-  version LOC_APICBVERS_0001 {
+struct rpc_loc_api_rpc_glue_code_info_remote_rets {
+  rpc_uint32 toolvers;   /* Tool version */
+  rpc_uint32 features;   /* Features turned on in the code.
+                          * 0x00000001    ONCRPC Server Cleanup Support
+                          */
+  rpc_uint32 proghash;   /* Unique hash value for the API XDR definition */
+  rpc_uint32 cbproghash; /* Unique hash value for the Callbacks' XDR definition */
+};
 
-    rpc_loc_event_cb_f_type_rets
-      rpc_loc_event_cb_f_type( rpc_loc_event_cb_f_type_args ) = 1;
+struct rpc_loc_open_rets {
+  rpc_loc_client_handle_type loc_open_result;
+};
+
+struct rpc_loc_close_rets {
+  rpc_int32 loc_close_result;
+};
+
+struct rpc_loc_start_fix_rets {
+  rpc_int32 loc_start_fix_result;
+};
+
+struct rpc_loc_stop_fix_rets {
+  rpc_int32 loc_stop_fix_result;
+};
+
+struct rpc_loc_ioctl_rets {
+  rpc_int32 loc_ioctl_result;
+};
+
+ struct rpc_loc_api_api_versions_rets {
+  rpc_loc_api_api_versions_return_type loc_api_api_versions_result;
+  rpc_uint32 *len;
+};
+
+/*
+ * XDR definition of the LOC_API program ( vers. 0x00040001 )
+ */
+
+program LOC_APIPROG {
+  version LOC_APIVERS_0001 {
+
+    void
+      rpc_loc_api_null( void ) = 0;
+
+    rpc_loc_api_rpc_glue_code_info_remote_rets
+      rpc_loc_api_rpc_glue_code_info_remote( void ) = 1;
+
+    rpc_loc_open_rets
+      rpc_loc_open( rpc_loc_open_args ) = 2;
+
+    rpc_loc_close_rets
+      rpc_loc_close( rpc_loc_close_args ) = 3;
+
+    rpc_loc_start_fix_rets
+      rpc_loc_start_fix( rpc_loc_start_fix_args ) = 4;
+
+    rpc_loc_stop_fix_rets
+      rpc_loc_stop_fix( rpc_loc_stop_fix_args ) = 5;
+
+    rpc_loc_ioctl_rets
+      rpc_loc_ioctl( rpc_loc_ioctl_args ) = 6;
+
+      rpc_loc_api_api_versions_rets
+      rpc_loc_api_api_versions( void ) = 0xFFFFFFFF;
 
 
-  } = 0x00010001;
-} = 0x3100008c;
+  } = 0x00040001;
+} = 0x3000008c;
 
-const LOC_APICBVERS = 0x00010001;
+const LOC_APIVERS = 0x00040001;

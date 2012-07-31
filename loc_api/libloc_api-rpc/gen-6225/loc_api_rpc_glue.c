@@ -55,7 +55,6 @@ when       who      what, where, why
 
 #include <rpc/rpc.h>
 #include <rpc/clnt.h>
-#include "loc_api_sync_call.h"
 
 /* Include RPC headers */
 #include "loc_api_rpc_glue.h"
@@ -92,7 +91,7 @@ loc_event_cb_f_type *loc_api_saved_cb = NULL;  /* the only callback of Loc API c
 
 /* Callback functions */
 /* Returns 1 if successful */
-bool_t rpc_loc_event_cb_f_type_0x00020002_svc(
+bool_t rpc_loc_event_cb_f_type_0x00040001_svc(
         rpc_loc_event_cb_f_type_args *argp,
         rpc_loc_event_cb_f_type_rets *ret,
         struct svc_req *req)
@@ -121,9 +120,6 @@ bool_t rpc_loc_event_cb_f_type_0x00020002_svc(
     const rpc_loc_event_payload_u_type*  loc_event_payload =
         (const rpc_loc_event_payload_u_type*) argp->loc_event_payload;
 
-    /* Gives control to synchronous call handler */
-    loc_api_callback_process_sync_call(loc_handle, loc_event, loc_event_payload);
-
     int32 rc = loc_api_saved_cb(loc_handle, loc_event, loc_event_payload);
     ret->loc_event_cb_f_type_result = rc;
 
@@ -142,7 +138,7 @@ int loc_apicbprog_freeresult (SVCXPRT *transp, xdrproc_t xdr_result, caddr_t res
     return 1;
 }
 
-int loc_apicbprog_0x00020001_freeresult (SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result)
+int loc_apicbprog_0x00040001_freeresult (SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result)
 {
     return loc_apicbprog_freeresult (transp, xdr_result, result);
 }
@@ -165,7 +161,7 @@ int loc_api_glue_init(void)
     {
         /* Print msg */
         LOGD("Trying to create RPC client...\n");
-        loc_api_clnt = clnt_create(NULL, LOC_APIPROG, /*LOC_APIVERS*/ 0x00020002, NULL);
+        loc_api_clnt = clnt_create(NULL, LOC_APIPROG, /*LOC_APIVERS*/ 0x00040000, NULL);
         LOGD("Created loc_api_clnt ---- %x\n", (unsigned int)loc_api_clnt);
 
         if (loc_api_clnt == NULL)
@@ -175,8 +171,6 @@ int loc_api_glue_init(void)
         }
 
         /* Init RPC callbacks */
-	loc_api_sync_call_init();
-
         int rc = loc_apicb_app_init();
         if (rc >= 0)
         {
@@ -225,10 +219,9 @@ int32 loc_close(rpc_loc_client_handle_type handle)
     LOC_GLUE_CHECK_RESULT(stat, int32);
 
     if (loc_api_clnt != NULL)
-        clnt_destroy(loc_api_clnt);
+		clnt_destroy(loc_api_clnt);
 
     loc_api_clnt = NULL;
-
     return (int32) rets.loc_close_result;
 }
 
@@ -270,17 +263,14 @@ int32 loc_ioctl(
     rpc_loc_ioctl_data_u_type*           ioctl_data
     )
 {
-	LOGD("ioctl start");
     LOC_GLUE_CHECK_INIT(int32);
 
-	LOGD("ioctl checked");
     rpc_loc_ioctl_args args;
     args.handle = handle;
     args.ioctl_data = ioctl_data;
     args.ioctl_type = ioctl_type;
     if (ioctl_data != NULL)
     {
-	LOGD("ioctl has data");
         /* Assign ioctl union discriminator */
         ioctl_data->disc = ioctl_type;
 
@@ -332,11 +322,8 @@ int32 loc_ioctl(
     rpc_loc_ioctl_rets rets;
     enum clnt_stat stat = RPC_SUCCESS;
 
-	LOGD("ioctl is set");
     stat = RPC_FUNC_VERSION(rpc_loc_ioctl_, LOC_APIVERS)(&args, &rets, loc_api_clnt);
-	LOGD("ioctl is called");
     LOC_GLUE_CHECK_RESULT(stat, int32);
-	LOGD("ioctl checked glue");
 
     return (int32) rets.loc_ioctl_result;
 }

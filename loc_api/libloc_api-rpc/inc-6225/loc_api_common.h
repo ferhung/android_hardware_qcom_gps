@@ -15,11 +15,7 @@
 extern "C" {
 #endif
 
-#define LOC_API_TOOLVERS 0x00040022
-#define LOC_API_FEATURES 0x00000001
 #define RPC_LOC_EVENT_NI_NOTIFY_VERIFY_REQUEST 0x00000010
-#define RPC_LOC_EVENT_NMEA_1HZ_REPORT 0x00000004
-#define RPC_LOC_EVENT_WPS_NEEDED_REQUEST 0x00000200
 #define RPC_LOC_EVENT_IOCTL_REPORT 0x00000080
 #define RPC_LOC_EVENT_LOCATION_SERVER_REQUEST 0x00000040
 #define RPC_LOC_EVENT_RESERVED 0x8000000000000000
@@ -28,16 +24,14 @@ extern "C" {
 #define RPC_LOC_EVENT_NMEA_POSITION_REPORT 0x00000008
 #define RPC_LOC_EVENT_SATELLITE_REPORT 0x00000002
 #define RPC_LOC_EVENT_STATUS_REPORT 0x00000100
-#define RPC_LOC_EVENT_CB_F_TYPE_VERSION 0x00050001
-#define RPC_LOC_OPEN_VERSION 0x00050001
-#define RPC_LOC_API_RPC_GLUE_CODE_INFO_REMOTE_VERSION 0x00050001
-#define RPC_LOC_API_NULL_VERSION 0x00050001
-#define RPC_LOC_STOP_FIX_VERSION 0x00050001
-#define RPC_LOC_IOCTL_VERSION 0x00050001
-#define RPC_LOC_START_FIX_VERSION 0x00050001
-#define RPC_LOC_CLOSE_VERSION 0x00050001
+#define RPC_LOC_OPEN_VERSION 0x00040001
+#define RPC_LOC_CLOSE_VERSION 0x00040001
+#define RPC_LOC_START_FIX_VERSION 0x00040001
+#define RPC_LOC_STOP_FIX_VERSION 0x00040001
+#define RPC_LOC_IOCTL_VERSION 0x00040001
+#define RPC_LOC_EVENT_CB_F_TYPE_VERSION 0x00040001
 #define RPC_LOC_APIAPI_VERSION_IS_HASHKEY 0
-#define RPC_LOC_API_API_MAJOR_NUM 0x0005
+#define RPC_LOC_API_API_MAJOR_NUM 0x0001
 
 typedef bool_t rpc_boolean;
 
@@ -166,7 +160,10 @@ typedef struct rpc_loc_gnss_info_s_type rpc_loc_gnss_info_s_type;
 
 struct rpc_loc_nmea_report_s_type {
 	rpc_uint16 length;
-	char nmea_sentences[200];
+	struct {
+		u_int nmea_sentences_len;
+		char *nmea_sentences_val;
+	} nmea_sentences;
 };
 typedef struct rpc_loc_nmea_report_s_type rpc_loc_nmea_report_s_type;
 
@@ -221,7 +218,10 @@ typedef struct rpc_loc_server_addr_ipv4_type rpc_loc_server_addr_ipv4_type;
 
 struct rpc_loc_server_addr_url_type {
 	rpc_uint16 length;
-	char addr[256];
+	struct {
+		u_int addr_len;
+		char *addr_val;
+	} addr;
 };
 typedef struct rpc_loc_server_addr_url_type rpc_loc_server_addr_url_type;
 
@@ -254,7 +254,6 @@ enum rpc_loc_ni_event_e_type {
 	RPC_LOC_NI_EVENT_VX_NOTIFY_VERIFY_REQ = 1,
 	RPC_LOC_NI_EVENT_SUPL_NOTIFY_VERIFY_REQ = 2,
 	RPC_LOC_NI_EVENT_UMTS_CP_NOTIFY_VERIFY_REQ = 3,
-	RPC_LOC_NI_EVENT_VX_SERVICE_INTERACTION_REQ = 4,
 	RPC_LOC_NI_EVENT_MAX = 268435456,
 };
 typedef enum rpc_loc_ni_event_e_type rpc_loc_ni_event_e_type;
@@ -363,14 +362,20 @@ typedef struct rpc_loc_ni_supl_slp_session_id_s_type rpc_loc_ni_supl_slp_session
 
 struct rpc_loc_ni_requestor_id_s_type {
 	u_char data_coding_scheme;
-	char requestor_id_string[200];
+	struct {
+		u_int requestor_id_string_len;
+		char *requestor_id_string_val;
+	} requestor_id_string;
 	u_char string_len;
 };
 typedef struct rpc_loc_ni_requestor_id_s_type rpc_loc_ni_requestor_id_s_type;
 
 struct rpc_loc_ni_supl_client_name_s_type {
 	u_char data_coding_scheme;
-	char client_name_string[64];
+	struct {
+		u_int client_name_string_len;
+		char *client_name_string_val;
+	} client_name_string;
 	u_char string_len;
 };
 typedef struct rpc_loc_ni_supl_client_name_s_type rpc_loc_ni_supl_client_name_s_type;
@@ -379,7 +384,7 @@ struct rpc_loc_ni_supl_qop_s_type {
 	u_char bit_mask;
 	u_char horacc;
 	u_char veracc;
-	rpc_uint16 maxLocAge;
+	u_char maxLocAge;
 	u_char delay;
 };
 typedef struct rpc_loc_ni_supl_qop_s_type rpc_loc_ni_supl_qop_s_type;
@@ -400,7 +405,10 @@ typedef struct rpc_loc_ni_supl_notify_verify_req_s_type rpc_loc_ni_supl_notify_v
 
 struct rpc_loc_ni_ext_client_address_s_type {
 	u_char ext_client_address_len;
-	char ext_client_address[20];
+	struct {
+		u_int ext_client_address_len;
+		char *ext_client_address_val;
+	} ext_client_address;
 };
 typedef struct rpc_loc_ni_ext_client_address_s_type rpc_loc_ni_ext_client_address_s_type;
 
@@ -420,7 +428,10 @@ typedef struct rpc_loc_ni_deferred_location_s_type rpc_loc_ni_deferred_location_
 
 struct rpc_loc_ni_codeword_string_s_type {
 	u_char data_coding_scheme;
-	char lcs_codeword_string[20];
+	struct {
+		u_int lcs_codeword_string_len;
+		char *lcs_codeword_string_val;
+	} lcs_codeword_string;
 	u_char string_len;
 };
 typedef struct rpc_loc_ni_codeword_string_s_type rpc_loc_ni_codeword_string_s_type;
@@ -435,7 +446,10 @@ struct rpc_loc_ni_umts_cp_notify_verify_req_s_type {
 	u_char invoke_id;
 	rpc_uint16 flags;
 	u_char notification_length;
-	char notification_text[64];
+	struct {
+		u_int notification_text_len;
+		char *notification_text_val;
+	} notification_text;
 	rpc_loc_ni_datacoding_scheme_e_type datacoding_scheme;
 	rpc_loc_ni_ext_client_address_s_type ext_client_address_data;
 	rpc_loc_ni_location_type_e_type location_type;
@@ -447,25 +461,12 @@ struct rpc_loc_ni_umts_cp_notify_verify_req_s_type {
 };
 typedef struct rpc_loc_ni_umts_cp_notify_verify_req_s_type rpc_loc_ni_umts_cp_notify_verify_req_s_type;
 
-enum rpc_loc_ni_service_interaction_e_type {
-	RPC_LOC_NI_SERVICE_INTERACTION_ONGOING_NI_INCOMING_MO = 1,
-	RPC_LOC_NI_SERVICE_INTERACTION_MAX = 268435456,
-};
-typedef enum rpc_loc_ni_service_interaction_e_type rpc_loc_ni_service_interaction_e_type;
-
-struct rpc_loc_ni_vx_service_interaction_req_s_type {
-	rpc_loc_ni_vx_notify_verify_req_s_type ni_vx_req;
-	rpc_loc_ni_service_interaction_e_type service_interation_type;
-};
-typedef struct rpc_loc_ni_vx_service_interaction_req_s_type rpc_loc_ni_vx_service_interaction_req_s_type;
-
 struct rpc_loc_ni_event_payload_u_type {
 	rpc_loc_ni_event_e_type disc;
 	union {
 		rpc_loc_ni_vx_notify_verify_req_s_type vx_req;
 		rpc_loc_ni_supl_notify_verify_req_s_type supl_req;
 		rpc_loc_ni_umts_cp_notify_verify_req_s_type umts_cp_req;
-		rpc_loc_ni_vx_service_interaction_req_s_type service_interaction_req;
 	} rpc_loc_ni_event_payload_u_type_u;
 };
 typedef struct rpc_loc_ni_event_payload_u_type rpc_loc_ni_event_payload_u_type;
@@ -563,21 +564,6 @@ struct rpc_loc_server_request_s_type {
 };
 typedef struct rpc_loc_server_request_s_type rpc_loc_server_request_s_type;
 
-enum rpc_loc_qwip_request_e_type {
-	RPC_LOC_QWIP_START_PERIODIC_HI_FREQ_FIXES = 0,
-	RPC_LOC_QWIP_START_PERIODIC_KEEP_WARM = 0 + 1,
-	RPC_LOC_QWIP_STOP_PERIODIC_FIXES = 0 + 2,
-	RPC_LOC_QWIP_SUSPEND = 0 + 3,
-	RPC_LOC_QWIP_REQUEST_MAX = 268435456,
-};
-typedef enum rpc_loc_qwip_request_e_type rpc_loc_qwip_request_e_type;
-
-struct rpc_loc_qwip_request_s_type {
-	rpc_loc_qwip_request_e_type request_type;
-	rpc_uint16 tbf_ms;
-};
-typedef struct rpc_loc_qwip_request_s_type rpc_loc_qwip_request_s_type;
-
 struct rpc_loc_reserved_payload_s_type {
 	rpc_uint16 data_size;
 	struct {
@@ -603,9 +589,6 @@ enum rpc_loc_ioctl_e_type {
 	RPC_LOC_IOCTL_QUERY_ENGINE_STATE = 408,
 	RPC_LOC_IOCTL_INFORM_SERVER_OPEN_STATUS = 409,
 	RPC_LOC_IOCTL_INFORM_SERVER_CLOSE_STATUS = 410,
-	RPC_LOC_IOCTL_SEND_WIPER_POSITION_REPORT = 411,
-	RPC_LOC_IOCTL_NOTIFY_WIPER_STATUS = 412,
-	RPC_LOC_IOCTL_ACCESS_EFS_DATA = 413,
 	RPC_LOC_IOCTL_NV_SETTINGS_START_INDEX = 800,
 	RPC_LOC_IOCTL_SET_ENGINE_LOCK = 800,
 	RPC_LOC_IOCTL_GET_ENGINE_LOCK = 801,
@@ -650,7 +633,6 @@ enum rpc_loc_operation_mode_e_type {
 	RPC_LOC_OPER_MODE_SPEED_OPTIMAL = 5,
 	RPC_LOC_OPER_MODE_ACCURACY_OPTIMAL = 6,
 	RPC_LOC_OPER_MODE_DATA_OPTIMAL = 7,
-	RPC_LOC_OPER_MODE_CELL_ID = 8,
 	RPC_LOC_OPER_MODE_MAX = 268435456,
 };
 typedef enum rpc_loc_operation_mode_e_type rpc_loc_operation_mode_e_type;
@@ -742,7 +724,6 @@ struct rpc_loc_assist_data_pos_s_type {
 	float vert_unc;
 	u_char confidence_horizontal;
 	u_char confidence_vertical;
-	rpc_int32 timestamp_age;
 };
 typedef struct rpc_loc_assist_data_pos_s_type rpc_loc_assist_data_pos_s_type;
 
@@ -756,7 +737,7 @@ typedef enum rpc_loc_server_open_status_e_type rpc_loc_server_open_status_e_type
 struct rpc_loc_server_open_status_s_type {
 	rpc_loc_server_connection_handle conn_handle;
 	rpc_loc_server_open_status_e_type open_status;
-	char apn_name[100];
+	char *apn_name;
 };
 typedef struct rpc_loc_server_open_status_s_type rpc_loc_server_open_status_s_type;
 
@@ -772,73 +753,6 @@ struct rpc_loc_server_close_status_s_type {
 	rpc_loc_server_close_status_e_type close_status;
 };
 typedef struct rpc_loc_server_close_status_s_type rpc_loc_server_close_status_s_type;
-
-struct rpc_loc_wiper_fix_time_s_type {
-	rpc_uint32 slow_clock_count;
-};
-typedef struct rpc_loc_wiper_fix_time_s_type rpc_loc_wiper_fix_time_s_type;
-
-struct rpc_loc_wiper_fix_pos_s_type {
-	rpc_int32 lat;
-	rpc_int32 lon;
-	rpc_uint16 HEPE;
-	rpc_uint8 num_of_aps_used;
-	rpc_uint8 fix_error_code;
-};
-typedef struct rpc_loc_wiper_fix_pos_s_type rpc_loc_wiper_fix_pos_s_type;
-
-struct rpc_loc_wiper_ap_info_s_type {
-	char mac_addr[6];
-	rpc_int32 rssi;
-	rpc_uint16 channel;
-	rpc_uint8 ap_qualifier;
-};
-typedef struct rpc_loc_wiper_ap_info_s_type rpc_loc_wiper_ap_info_s_type;
-
-struct rpc_loc_wiper_ap_set_s_type {
-	rpc_uint8 num_of_aps;
-	rpc_loc_wiper_ap_info_s_type ap_info[50];
-};
-typedef struct rpc_loc_wiper_ap_set_s_type rpc_loc_wiper_ap_set_s_type;
-
-struct rpc_loc_wiper_position_report_s_type {
-	rpc_uint8 wiper_valid_info_flag;
-	rpc_loc_wiper_fix_time_s_type wiper_fix_time;
-	rpc_loc_wiper_fix_pos_s_type wiper_fix_position;
-	rpc_loc_wiper_ap_set_s_type wiper_ap_set;
-};
-typedef struct rpc_loc_wiper_position_report_s_type rpc_loc_wiper_position_report_s_type;
-
-enum rpc_loc_wiper_status_e_type {
-	RPC_LOC_WIPER_STATUS_AVAILABLE = 1,
-	RPC_LOC_WIPER_STATUS_UNAVAILABLE = 2,
-	RPC_LOC_WIPER_STATUS_E_SIZE = 268435456,
-};
-typedef enum rpc_loc_wiper_status_e_type rpc_loc_wiper_status_e_type;
-
-enum rpc_loc_fs_operation_e_type {
-	RPC_LOC_FS_CREATE_WRITE_FILE = 1,
-	RPC_LOC_FS_APPEND_FILE = 2,
-	RPC_LOC_FS_DELETE_FILE = 3,
-	RPC_LOC_FS_READ_FILE = 4,
-	RPC_LOC_FS_MAX = 268435456,
-};
-typedef enum rpc_loc_fs_operation_e_type rpc_loc_fs_operation_e_type;
-
-struct rpc_loc_efs_data_s_type {
-	char filename[64];
-	rpc_loc_fs_operation_e_type operation;
-	rpc_uint32 total_size;
-	struct {
-		u_int data_ptr_len;
-		char *data_ptr_val;
-	} data_ptr;
-	rpc_uint32 part_len;
-	rpc_uint8 part;
-	rpc_uint8 total_parts;
-	rpc_uint32 reserved;
-};
-typedef struct rpc_loc_efs_data_s_type rpc_loc_efs_data_s_type;
 
 enum rpc_loc_lock_e_type {
 	RPC_LOC_LOCK_NONE = 1,
@@ -870,15 +784,12 @@ struct rpc_loc_ioctl_data_u_type {
 		rpc_loc_assist_data_pos_s_type assistance_data_position;
 		rpc_loc_server_open_status_s_type conn_open_status;
 		rpc_loc_server_close_status_s_type conn_close_status;
-		rpc_loc_wiper_position_report_s_type wiper_pos;
-		rpc_loc_wiper_status_e_type wiper_status;
 		rpc_loc_lock_e_type engine_lock;
 		rpc_boolean sbas_mode;
 		rpc_loc_nmea_sentence_type nmea_types;
 		rpc_boolean on_demand_lpm;
 		rpc_loc_server_info_s_type server_addr;
 		rpc_loc_assist_data_delete_s_type assist_data_delete;
-		rpc_loc_efs_data_s_type efs_data;
 	} rpc_loc_ioctl_data_u_type_u;
 };
 typedef struct rpc_loc_ioctl_data_u_type rpc_loc_ioctl_data_u_type;
@@ -917,11 +828,12 @@ struct rpc_loc_event_payload_u_type {
 		rpc_loc_server_request_s_type loc_server_request;
 		rpc_loc_ioctl_callback_s_type ioctl_report;
 		rpc_loc_status_event_s_type status_report;
-		rpc_loc_qwip_request_s_type qwip_request;
 		rpc_loc_reserved_payload_s_type reserved;
 	} rpc_loc_event_payload_u_type_u;
 };
 typedef struct rpc_loc_event_payload_u_type rpc_loc_event_payload_u_type;
+#define RPC_LOC_API_NULL_VERSION 0x00040001
+#define RPC_LOC_API_RPC_GLUE_CODE_INFO_REMOTE_VERSION 0x00040001
 
 /* the xdr functions */
 
@@ -976,8 +888,6 @@ extern  bool_t xdr_rpc_loc_ni_deferred_location_s_type (XDR *, rpc_loc_ni_deferr
 extern  bool_t xdr_rpc_loc_ni_codeword_string_s_type (XDR *, rpc_loc_ni_codeword_string_s_type*);
 extern  bool_t xdr_rpc_loc_ni_service_type_id_s_type (XDR *, rpc_loc_ni_service_type_id_s_type*);
 extern  bool_t xdr_rpc_loc_ni_umts_cp_notify_verify_req_s_type (XDR *, rpc_loc_ni_umts_cp_notify_verify_req_s_type*);
-extern  bool_t xdr_rpc_loc_ni_service_interaction_e_type (XDR *, rpc_loc_ni_service_interaction_e_type*);
-extern  bool_t xdr_rpc_loc_ni_vx_service_interaction_req_s_type (XDR *, rpc_loc_ni_vx_service_interaction_req_s_type*);
 extern  bool_t xdr_rpc_loc_ni_event_payload_u_type (XDR *, rpc_loc_ni_event_payload_u_type*);
 extern  bool_t xdr_rpc_loc_ni_event_s_type (XDR *, rpc_loc_ni_event_s_type*);
 extern  bool_t xdr_rpc_loc_assist_data_request_e_type (XDR *, rpc_loc_assist_data_request_e_type*);
@@ -996,8 +906,6 @@ extern  bool_t xdr_rpc_loc_server_open_req_s_type (XDR *, rpc_loc_server_open_re
 extern  bool_t xdr_rpc_loc_server_close_req_s_type (XDR *, rpc_loc_server_close_req_s_type*);
 extern  bool_t xdr_rpc_loc_server_request_u_type (XDR *, rpc_loc_server_request_u_type*);
 extern  bool_t xdr_rpc_loc_server_request_s_type (XDR *, rpc_loc_server_request_s_type*);
-extern  bool_t xdr_rpc_loc_qwip_request_e_type (XDR *, rpc_loc_qwip_request_e_type*);
-extern  bool_t xdr_rpc_loc_qwip_request_s_type (XDR *, rpc_loc_qwip_request_s_type*);
 extern  bool_t xdr_rpc_loc_reserved_payload_s_type (XDR *, rpc_loc_reserved_payload_s_type*);
 extern  bool_t xdr_rpc_loc_ioctl_e_type (XDR *, rpc_loc_ioctl_e_type*);
 extern  bool_t xdr_rpc_loc_api_version_s_type (XDR *, rpc_loc_api_version_s_type*);
@@ -1018,14 +926,6 @@ extern  bool_t xdr_rpc_loc_server_open_status_e_type (XDR *, rpc_loc_server_open
 extern  bool_t xdr_rpc_loc_server_open_status_s_type (XDR *, rpc_loc_server_open_status_s_type*);
 extern  bool_t xdr_rpc_loc_server_close_status_e_type (XDR *, rpc_loc_server_close_status_e_type*);
 extern  bool_t xdr_rpc_loc_server_close_status_s_type (XDR *, rpc_loc_server_close_status_s_type*);
-extern  bool_t xdr_rpc_loc_wiper_fix_time_s_type (XDR *, rpc_loc_wiper_fix_time_s_type*);
-extern  bool_t xdr_rpc_loc_wiper_fix_pos_s_type (XDR *, rpc_loc_wiper_fix_pos_s_type*);
-extern  bool_t xdr_rpc_loc_wiper_ap_info_s_type (XDR *, rpc_loc_wiper_ap_info_s_type*);
-extern  bool_t xdr_rpc_loc_wiper_ap_set_s_type (XDR *, rpc_loc_wiper_ap_set_s_type*);
-extern  bool_t xdr_rpc_loc_wiper_position_report_s_type (XDR *, rpc_loc_wiper_position_report_s_type*);
-extern  bool_t xdr_rpc_loc_wiper_status_e_type (XDR *, rpc_loc_wiper_status_e_type*);
-extern  bool_t xdr_rpc_loc_fs_operation_e_type (XDR *, rpc_loc_fs_operation_e_type*);
-extern  bool_t xdr_rpc_loc_efs_data_s_type (XDR *, rpc_loc_efs_data_s_type*);
 extern  bool_t xdr_rpc_loc_lock_e_type (XDR *, rpc_loc_lock_e_type*);
 extern  bool_t xdr_rpc_loc_nmea_sentence_type (XDR *, rpc_loc_nmea_sentence_type*);
 extern  bool_t xdr_rpc_loc_assist_data_type (XDR *, rpc_loc_assist_data_type*);
@@ -1086,8 +986,6 @@ extern bool_t xdr_rpc_loc_ni_deferred_location_s_type ();
 extern bool_t xdr_rpc_loc_ni_codeword_string_s_type ();
 extern bool_t xdr_rpc_loc_ni_service_type_id_s_type ();
 extern bool_t xdr_rpc_loc_ni_umts_cp_notify_verify_req_s_type ();
-extern bool_t xdr_rpc_loc_ni_service_interaction_e_type ();
-extern bool_t xdr_rpc_loc_ni_vx_service_interaction_req_s_type ();
 extern bool_t xdr_rpc_loc_ni_event_payload_u_type ();
 extern bool_t xdr_rpc_loc_ni_event_s_type ();
 extern bool_t xdr_rpc_loc_assist_data_request_e_type ();
@@ -1106,8 +1004,6 @@ extern bool_t xdr_rpc_loc_server_open_req_s_type ();
 extern bool_t xdr_rpc_loc_server_close_req_s_type ();
 extern bool_t xdr_rpc_loc_server_request_u_type ();
 extern bool_t xdr_rpc_loc_server_request_s_type ();
-extern bool_t xdr_rpc_loc_qwip_request_e_type ();
-extern bool_t xdr_rpc_loc_qwip_request_s_type ();
 extern bool_t xdr_rpc_loc_reserved_payload_s_type ();
 extern bool_t xdr_rpc_loc_ioctl_e_type ();
 extern bool_t xdr_rpc_loc_api_version_s_type ();
@@ -1128,14 +1024,6 @@ extern bool_t xdr_rpc_loc_server_open_status_e_type ();
 extern bool_t xdr_rpc_loc_server_open_status_s_type ();
 extern bool_t xdr_rpc_loc_server_close_status_e_type ();
 extern bool_t xdr_rpc_loc_server_close_status_s_type ();
-extern bool_t xdr_rpc_loc_wiper_fix_time_s_type ();
-extern bool_t xdr_rpc_loc_wiper_fix_pos_s_type ();
-extern bool_t xdr_rpc_loc_wiper_ap_info_s_type ();
-extern bool_t xdr_rpc_loc_wiper_ap_set_s_type ();
-extern bool_t xdr_rpc_loc_wiper_position_report_s_type ();
-extern bool_t xdr_rpc_loc_wiper_status_e_type ();
-extern bool_t xdr_rpc_loc_fs_operation_e_type ();
-extern bool_t xdr_rpc_loc_efs_data_s_type ();
 extern bool_t xdr_rpc_loc_lock_e_type ();
 extern bool_t xdr_rpc_loc_nmea_sentence_type ();
 extern bool_t xdr_rpc_loc_assist_data_type ();
